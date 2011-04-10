@@ -1,1 +1,6 @@
 /bin
+
+# Eclipse's .classpath contains developer-specific paths (e.g. to linked sources)
+/.classpath
+
+# EGit needs trailing newline
