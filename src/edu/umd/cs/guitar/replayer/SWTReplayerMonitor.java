@@ -42,30 +42,25 @@ import edu.umd.cs.guitar.model.data.PropertyType;
 import edu.umd.cs.guitar.util.GUITARLog;
 
 /**
- * Replayer monitor for Java Swing (JFC) application
+ * Replayer monitor for Java SWT application
  * 
- * <p>
- * 
- * @author <a href="mailto:baonn@cs.umd.edu"> Bao Nguyen </a>
  */
 public class SWTReplayerMonitor extends GReplayerMonitor {
 
 	private static final int INITIAL_DELAY = 1000;
-	String MAIN_CLASS;
-
-	private SWTReplayerConfiguration config;
-
+	
+	
 	/**
 	 * Delay for widget searching loop
 	 */
 	private static final int DELAY_STEP = 50;
 
+	private SWTReplayerConfiguration config;
 	private final SWTApplication application;
 
 	public SWTReplayerMonitor(GReplayerConfiguration config,
 			SWTApplication application) {
 		this.config = (SWTReplayerConfiguration) config;
-		MAIN_CLASS = this.config.MAIN_CLASS;
 		this.application = application;
 	}
 
@@ -81,15 +76,10 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 
 	SecurityManager oldSecurityManager;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.umd.cs.guitar.replayer.AbsReplayerMonitor#setUp()
-	 */
 	@Override
 	public void setUp() {
 		GUITARLog.log.info("Setting up SWTReplayer...");
-		// -------------------------------------
+		
 		// Add handler for all uncaught exceptions
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
 			public void uncaughtException(Thread t, Throwable e) {
@@ -97,15 +87,10 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 			}
 		});
 
-		// -------------------------------------
-		// Disable System.exit() call by changing SecurityManager
-
+		
+		// Disable any calls to System.exit() (which would terminate the JVM) by the GUI
 		oldSecurityManager = System.getSecurityManager();
 		final SecurityManager securityManager = new SecurityManager() {
-			// public void checkExit(int status) {
-			// //throw new ApplicationTerminatedException(status);
-			// }
-
 			@Override
 			public void checkPermission(Permission permission, Object context) {
 				if ("exitVM".equals(permission.getName())) {
@@ -131,22 +116,11 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.umd.cs.guitar.replayer.AbsReplayerMonitor#cleanUp()
-	 */
 	@Override
 	public void cleanUp() {
 		System.setSecurityManager(oldSecurityManager);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * edu.umd.cs.guitar.replayer.AbsReplayerMonitor#getAction(java.lang.String)
-	 */
 	@Override
 	public GEvent getAction(String actionName) {
 		GEvent retAction = null;
@@ -163,26 +137,12 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 		return retAction;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * edu.umd.cs.guitar.replayer.AbsReplayerMonitor#getArguments(java.lang.
-	 * String)
-	 */
 	@Override
 	public Object getArguments(String action) {
-		// EventData event = new EventData(action);
-		// return event.getParameters();
+		// not being used by JFC
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * edu.umd.cs.guitar.replayer.AbsReplayerMonitor#getWindow(java.lang.String)
-	 */
 	@Override
 	public GWindow getWindow(String sWindowTitle) {
 
@@ -198,10 +158,6 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 				}
 			});
 
-			if (shells == null) {
-				continue;
-			}
-
 			for (Shell s : shells[0]) {
 				Shell shell = getOwnedWindowByID(s, sWindowTitle);
 				if (shell != null) {
@@ -209,28 +165,16 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 					break;
 				}
 			}
-			// try {
-			// Thread.sleep(DELAY_STEP);
-			// } catch (InterruptedException e) {
-			// GUITARLog.log.error(e);
-			// }
-
-			// new EventTool().waitNoEvent(DELAY_STEP);
+			
 		}
 		return retGXWindow;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * edu.umd.cs.guitar.replayer.GReplayerMonitor#selectIDProperties(edu.umd
-	 * .cs.guitar.model.data.ComponentType)
-	 */
 	@Override
 	public List<PropertyType> selectIDProperties(ComponentType comp) {
-		if (comp == null)
+		if (comp == null) {
 			return new ArrayList<PropertyType>();
+		}
 
 		List<PropertyType> retIDProperties = new ArrayList<PropertyType>();
 
@@ -251,7 +195,7 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 	 * @param sWindowID
 	 * @return Window
 	 */
-	private Shell getOwnedWindowByID(Shell parent, String sWindowID) {
+	private Shell getOwnedWindowByID(final Shell parent, String sWindowID) {
 
 		if (parent == null) {
 			return null;
@@ -264,8 +208,6 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 			return null;
 		}
 
-		// if (sWindowID.equals(title )) {
-
 		if (isUseReg) {
 			if (isRegMatched(title, sWindowID)) {
 				return parent;
@@ -276,31 +218,34 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 			}
 		}
 
-		Shell retShell = null; // TODO convert this code to SWT
-		// Window[] wOwnedWins = parent.getOwnedWindows();
-		// for (Window aOwnedWin : wOwnedWins) {
-		// retWin = getOwnedWindowByID(aOwnedWin, sWindowID);
-		// if (retWin != null)
-		// return retWin;
-		// }
-
+		final Shell[][] childShells = new Shell[1][];
+		application.getDisplay().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				childShells[0] = parent.getShells();
+			}
+		});
+		
+		Shell retShell = null;
+		for (Shell s : childShells[0]) {
+			// keep searching children
+			retShell = getOwnedWindowByID(s, sWindowID);
+			if (retShell != null) {
+				return retShell;	
+			}
+		}
+		
 		return retShell;
-
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see edu.umd.cs.guitar.replayer.AbsReplayerMonitor#connectToApplication()
-	 */
 	@Override
 	public void connectToApplication() {
 		GUITARLog.log.info("Loading URL....");
 
 		// TODO refactor with SWTRipperMonitor
 		String[] URLs;
-		if (config.URL_LIST != null)
-			URLs = config.URL_LIST
+		if (config.getUrlList() != null)
+			URLs = config.getUrlList()
 					.split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
 		else
 			URLs = new String[0];
@@ -309,8 +254,8 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 
 		String[] args;
 
-		if (config.ARGUMENT_LIST != null)
-			args = config.ARGUMENT_LIST
+		if (config.getArgumentList() != null)
+			args = config.getArgumentList()
 					.split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
 		else
 			args = new String[0];
@@ -319,11 +264,11 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 
 		application.connect(args);
 
-		GUITARLog.log.info("Initial waiting for " + config.INITIAL_WAITING_TIME
+		GUITARLog.log.info("Initial waiting for " + config.getInitialWaitTime()
 				+ "ms");
 
 		try {
-			Thread.sleep(config.INITIAL_WAITING_TIME);
+			Thread.sleep(config.getInitialWaitTime());
 		} catch (InterruptedException e) {
 			GUITARLog.log.error(e);
 			throw new ApplicationConnectException();

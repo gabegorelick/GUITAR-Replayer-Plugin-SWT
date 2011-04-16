@@ -27,60 +27,178 @@ import edu.umd.cs.guitar.util.Util;
 public class SWTReplayerConfiguration extends GReplayerConfiguration{
 
 	@Option(name = "-cf", usage = "Configure file for the gui recorder to recognize the terminal widgets", aliases = "--configure-file")
-	public static String CONFIG_FILE = "configuration.xml";
+	private String configFile = "configuration.xml";
 
 	// GUITAR runtime parameters
 	@Option(name = "-g", usage = "<REQUIRED> GUI file path", aliases = "--gui-file")
-	static String GUI_FILE = null;
+	private String guiFile = null;
 
 	@Option(name = "-e", usage = "<REQUIRED> EFG file path", aliases = "--efg-file")
-	static String EFG_FILE = null;
+	private String efgFile = null;
 
 	@Option(name = "-t", usage = "<REQUIRED> testcase file path", aliases = "--testcase-file")
-	static String TESTCASE = null;
+	private String testcase = null;
 
 	@Option(name = "-gs", usage = "gui state file path", aliases = "--gui-state")
-	static String GUI_STATE_FILE = "GUITAR-Default.STA";
+	private String guiStateFile = "GUITAR-Default.STA";
 
 	@Option(name = "-l", usage = "log file name ", aliases = "--log-file")
-	static String LOG_FILE = Util.getTimeStamp() + ".log";;
+	private String logFile = Util.getTimeStamp() + ".log";;
 
 	@Option(name = "-i", usage = "initial waiting time for the application to get stablized before being ripped", aliases = "--wait-time")
-	static int INITIAL_WAITING_TIME = 0;
+	private int initialWaitTime = 0;
 
 	@Option(name = "-d", usage = "step delay time", aliases = "--delay")
-	static int DELAY = 0;
+	private int delay = 0;
 
 	@Option(name = "-to", usage = "testcase timeout", aliases = "--testcase-timeout")
-	static int TESTCASE_TIMEOUT = 30000;
+	private int testCaseTimeout = 30000;
 
 	@Option(name = "-so", usage = "test steptimeout", aliases = "--teststep-timeout")
-	static int TESTSTEP_TIMEOUT = 4000;
+	private int testStepTimeout = 4000;
 	
 	// Application Under Test
 	@Option(name = "-c", usage = "<REQUIRED> main class name for the Application Under Test ", aliases = "--main-class")
-	static String MAIN_CLASS = null;
+	private String mainClass = null;
 
 	@Option(name = "-a", usage = "arguments for the Application Under Test, separated by ';' ", aliases = "--arguments")
-	static String ARGUMENT_LIST;
+	private String argumentList;
 
 	@Option(name = "-u", usage = "URLs for the Application Under Test, separated by ';' ", aliases = "--urls")
-	static public String URL_LIST;
-
-	@Option(name = "-j", usage = "Java Virtual Machine options for the Application Under Test", aliases = "--jvm-options")
-	static String JVM_OPTIONS;
+	private String urlList;
 
 	@Option(name = "-p", usage = "Pause after each step", aliases = "--pause")
-	static boolean PAUSE = false;
+	private boolean pause = false;
 	
 	@Option(name = "-r", usage = "Compare string using regular expression", aliases = "--regular-expression")
-	static boolean REG_USED= false;
+	private boolean regUsed= false;
 
 	// Cobertura Coverage collection
-	@Option(name = "-cd", usage = "Cobertura coverage output dir", aliases = "--coverage-dir")
-	static String COVERAGE_DIR = null;
+//	@Option(name = "-cd", usage = "Cobertura coverage output dir", aliases = "--coverage-dir")
+//	private String COVERAGE_DIR = null;
+//
+//	@Option(name = "-cc", usage = "Cobertura coverage clean file ", aliases = "--coverage-clean")
+//	private String COVERAGE_CLEAN_FILE = null;
+	
+	
+	public String getConfigFile() {
+		return configFile;
+	}
 
-	@Option(name = "-cc", usage = "Cobertura coverage clean file ", aliases = "--coverage-clean")
-	static String COVERAGE_CLEAN_FILE = null;
+	public void setConfigFile(String configFile) {
+		this.configFile = configFile;
+	}
+
+	public String getGuiFile() {
+		return guiFile;
+	}
+
+	public void setGuiFile(String guiFile) {
+		this.guiFile = guiFile;
+	}
+
+	public String getEfgFile() {
+		return efgFile;
+	}
+
+	public void setEfgFile(String efgFile) {
+		this.efgFile = efgFile;
+	}
+
+	public String getTestcase() {
+		return testcase;
+	}
+
+	public void setTestcase(String testcase) {
+		this.testcase = testcase;
+	}
+
+	public String getGuiStateFile() {
+		return guiStateFile;
+	}
+
+	public void setGuiStateFile(String guiStateFile) {
+		this.guiStateFile = guiStateFile;
+	}
+
+	public String getLogFile() {
+		return logFile;
+	}
+
+	public void setLogFile(String logFile) {
+		this.logFile = logFile;
+	}
+
+	public int getInitialWaitTime() {
+		return initialWaitTime;
+	}
+
+	public void setInitialWaitTime(int initialWaitTime) {
+		this.initialWaitTime = initialWaitTime;
+	}
+
+	public int getDelay() {
+		return delay;
+	}
+
+	public void setDelay(int delay) {
+		this.delay = delay;
+	}
+
+	public int getTestCaseTimeout() {
+		return testCaseTimeout;
+	}
+
+	public void setTestCaseTimeout(int testCaseTimeout) {
+		this.testCaseTimeout = testCaseTimeout;
+	}
+
+	public int getTestStepTimeout() {
+		return testStepTimeout;
+	}
+
+	public void setTestStepTimeout(int testStepTimeout) {
+		this.testStepTimeout = testStepTimeout;
+	}
+
+	public String getMainClass() {
+		return mainClass;
+	}
+
+	public void setMainClass(String mainClass) {
+		this.mainClass = mainClass;
+	}
+
+	public String getArgumentList() {
+		return argumentList;
+	}
+
+	public void setArgumentList(String argumentList) {
+		this.argumentList = argumentList;
+	}
+
+	public String getUrlList() {
+		return urlList;
+	}
+
+	public void setUrlList(String urlList) {
+		this.urlList = urlList;
+	}
+
+	public boolean getPause() {
+		return pause;
+	}
+
+	public void setPause(boolean pause) {
+		this.pause = pause;
+	}
+
+	public boolean getRegUsed() {
+		return regUsed;
+	}
+
+	public void setRegUsed(boolean regUsed) {
+		this.regUsed = regUsed;
+	}	
 
 }

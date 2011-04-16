@@ -61,7 +61,7 @@ public class SWTReplayer {
 	
 	public SWTReplayer(SWTReplayerConfiguration config, Thread guiThread) {
 		this.config = config;
-		this.application = new SWTApplication(SWTReplayerConfiguration.MAIN_CLASS, guiThread);
+		this.application = new SWTApplication(config.getMainClass(), guiThread);
 	}
 
 	public void execute() throws CmdLineException {
@@ -70,10 +70,10 @@ public class SWTReplayer {
 		checkArgs();
 		setupEnv();
 
-		System.setProperty(GUITARLog.LOGFILE_NAME_SYSTEM_PROPERTY, SWTReplayerConfiguration.LOG_FILE);
+		System.setProperty(GUITARLog.LOGFILE_NAME_SYSTEM_PROPERTY, config.getLogFile());
 		printInfo();
 
-		TestCase tc = (TestCase) IO.readObjFromFile(SWTReplayerConfiguration.TESTCASE, TestCase.class);
+		TestCase tc = (TestCase) IO.readObjFromFile(config.getTestcase(), TestCase.class);
 
 		Replayer replayer;
 		try {
@@ -82,11 +82,11 @@ public class SWTReplayer {
 				throw new FileNotFoundException();
 			}
 
-			replayer = new Replayer(tc, SWTReplayerConfiguration.GUI_FILE, SWTReplayerConfiguration.EFG_FILE);
+			replayer = new Replayer(tc, config.getGuiFile(), config.getEfgFile());
 			GReplayerMonitor sMonitor = new SWTReplayerMonitor(config, application);
 			
-			GTestMonitor stateMonitor = new StateMonitorFull(SWTReplayerConfiguration.GUI_STATE_FILE,
-					                                         SWTReplayerConfiguration.DELAY );
+			GTestMonitor stateMonitor = new StateMonitorFull(config.getGuiStateFile(),
+					                                         config.getDelay());
 			
 			GIDGenerator idGenerator = SWTDefaultIDGenerator.getInstance();
 			((StateMonitorFull)stateMonitor).setIdGenerator(idGenerator);
@@ -94,13 +94,13 @@ public class SWTReplayer {
 			replayer.addTestMonitor(stateMonitor);
 
 			// Add a pause monitor and ignore time out monitor if needed
-			if (SWTReplayerConfiguration.PAUSE) {
+			if (config.getPause()) {
 				GTestMonitor pauseMonitor = new PauseMonitor();
 				replayer.addTestMonitor(pauseMonitor);
 			} else {
 				// Add a timeout monitor
-				GTestMonitor timeoutMonitor = new TimeMonitor(SWTReplayerConfiguration.TESTSTEP_TIMEOUT,
-						                                      SWTReplayerConfiguration.TESTCASE_TIMEOUT);
+				GTestMonitor timeoutMonitor = new TimeMonitor(config.getTestStepTimeout(),
+						                                      config.getTestCaseTimeout());
 				replayer.addTestMonitor(timeoutMonitor);
 			}
 
@@ -118,7 +118,7 @@ public class SWTReplayer {
 //			jMonitor.setUseReg(SWTReplayerConfiguration.REG_USED);
 			
 			replayer.setMonitor(sMonitor);
-			replayer.setTimeOut(SWTReplayerConfiguration.TESTCASE_TIMEOUT);
+			replayer.setTimeOut(config.getTestCaseTimeout());
 
 			replayer.execute();
 			
@@ -147,9 +147,9 @@ public class SWTReplayer {
 	}
 
 	private void printInfo() {
-		GUITARLog.log.info("Testcase: " + SWTReplayerConfiguration.TESTCASE);
-		GUITARLog.log.info("Log file: " + SWTReplayerConfiguration.LOG_FILE);
-		GUITARLog.log.info("GUI state file: " + SWTReplayerConfiguration.GUI_STATE_FILE);
+		GUITARLog.log.info("Testcase: " + config.getTestcase());
+		GUITARLog.log.info("Log file: " + config.getLogFile());
+		GUITARLog.log.info("GUI state file: " + config.getGuiStateFile());
 	}
 
 	/**
@@ -167,36 +167,36 @@ public class SWTReplayer {
 
 		boolean isPrintUsage = false;
 
-		if (SWTReplayerConfiguration.MAIN_CLASS == null) {
+		if (config.getMainClass() == null) {
 			System.err.println("missing '-c' argument");
 			isPrintUsage = true;
 		}
 
-		if (SWTReplayerConfiguration.GUI_FILE == null) {
+		if (config.getGuiFile() == null) {
 			System.err.println("missing '-g' argument");
 			isPrintUsage = true;
 		}
 
-		if (SWTReplayerConfiguration.EFG_FILE == null) {
+		if (config.getEfgFile() == null) {
 			System.err.println("missing '-e' argument");
 			isPrintUsage = true;
 		}
 
-		if (SWTReplayerConfiguration.TESTCASE == null) {
+		if (config.getTestcase() == null) {
 			System.err.println("missing '-t' argument");
 			isPrintUsage = true;
 		}
 		
-		boolean isNotMeasureCoverage = SWTReplayerConfiguration.COVERAGE_DIR == null
-				                       && SWTReplayerConfiguration.COVERAGE_CLEAN_FILE == null;
-		boolean isMeasureCoverage = SWTReplayerConfiguration.COVERAGE_DIR != null
-				                    && SWTReplayerConfiguration.COVERAGE_CLEAN_FILE != null;
-
-		if (!isMeasureCoverage && !isNotMeasureCoverage) {
-			System.err
-					.println("'-cd,-cc' should be either all set or all unset");
-			isPrintUsage = true;
-		}
+//		boolean isNotMeasureCoverage = SWTReplayerConfiguration.COVERAGE_DIR == null
+//				                       && SWTReplayerConfiguration.COVERAGE_CLEAN_FILE == null;
+//		boolean isMeasureCoverage = SWTReplayerConfiguration.COVERAGE_DIR != null
+//				                    && SWTReplayerConfiguration.COVERAGE_CLEAN_FILE != null;
+//
+//		if (!isMeasureCoverage && !isNotMeasureCoverage) {
+//			System.err
+//					.println("'-cd,-cc' should be either all set or all unset");
+//			isPrintUsage = true;
+//		}
 
 		if (isPrintUsage)
 			throw new CmdLineException("");
@@ -212,10 +212,10 @@ public class SWTReplayer {
 		Configuration conf;
 
 		conf = (Configuration) IO.readObjFromFile(
-				SWTReplayerConfiguration.CONFIG_FILE, Configuration.class);
+				config.getConfigFile(), Configuration.class);
 		if (conf == null) {
 			InputStream in = getClass().getClassLoader().getResourceAsStream(
-					SWTReplayerConfiguration.CONFIG_FILE);
+					config.getConfigFile());
 			conf = (Configuration) IO.readObjFromFile(in, Configuration.class);
 		}
 
