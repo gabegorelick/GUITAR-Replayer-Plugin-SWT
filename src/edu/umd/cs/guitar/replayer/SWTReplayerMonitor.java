@@ -82,18 +82,18 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 		// Disable any calls to System.exit() (which would terminate the JVM) by the GUI
 		oldSecurityManager = System.getSecurityManager();
 		final SecurityManager securityManager = new SecurityManager() {
+			private static final String EXIT_VM_PERMISSON = "exitVM";
+			
 			@Override
 			public void checkPermission(Permission permission, Object context) {
-				if ("exitVM".equals(permission.getName())) {
+				if (EXIT_VM_PERMISSON.equals(permission.getName())) {
 					throw new ExitTrappedException();
 				}
 			}
 
 			@Override
 			public void checkPermission(Permission permission) {
-				if ("exitVM".equals(permission.getName())) {
-					throw new ExitTrappedException();
-				}
+				checkPermission(permission, null);
 			}
 		};
 		System.setSecurityManager(securityManager);
