@@ -58,9 +58,9 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 	private SWTReplayerConfiguration config;
 	private final SWTApplication application;
 
-	public SWTReplayerMonitor(GReplayerConfiguration config,
+	public SWTReplayerMonitor(SWTReplayerConfiguration config,
 			SWTApplication application) {
-		this.config = (SWTReplayerConfiguration) config;
+		this.config = config;
 		this.application = application;
 	}
 
@@ -119,6 +119,13 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 	@Override
 	public void cleanUp() {
 		System.setSecurityManager(oldSecurityManager);
+		application.getDisplay().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				application.getDisplay().dispose();
+			}
+		});
+		GUITARLog.log.info("Display disposed");
 	}
 
 	@Override
@@ -297,6 +304,10 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 			return true;
 
 		return false;
+	}
+	
+	public SWTApplication getApplication() {
+		return application;
 	}
 
 }

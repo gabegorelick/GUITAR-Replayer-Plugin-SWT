@@ -31,14 +31,10 @@ public class SWTReplayerMain {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
-		// Note: We don't actually use this configuration object
-		// we only use this object to initialize the static fields of
-		// SWTReplayerConfiguration
 		SWTReplayerConfiguration configuration = new SWTReplayerConfiguration();
 		CmdLineParser parser = new CmdLineParser(configuration);
 		
-		// TODO start application fisrt
+		
 		SWTReplayer swtReplayer = new SWTReplayer(configuration, Thread.currentThread());
 
 		try {

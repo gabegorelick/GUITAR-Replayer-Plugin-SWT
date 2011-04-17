@@ -21,32 +21,24 @@ package edu.umd.cs.guitar.replayer;
 
 import org.kohsuke.args4j.Option;
 
-import edu.umd.cs.guitar.util.Util;
+import edu.umd.cs.guitar.ripper.SWTGuitarConfiguration;
 
 
-public class SWTReplayerConfiguration extends GReplayerConfiguration{
+public class SWTReplayerConfiguration extends SWTGuitarConfiguration {
 
-	@Option(name = "-cf", usage = "Configure file for the gui recorder to recognize the terminal widgets", aliases = "--configure-file")
-	private String configFile = "configuration.xml";
-
-	// GUITAR runtime parameters
-	@Option(name = "-g", usage = "<REQUIRED> GUI file path", aliases = "--gui-file")
-	private String guiFile = null;
-
-	@Option(name = "-e", usage = "<REQUIRED> EFG file path", aliases = "--efg-file")
+	// GUITAR runtime parameters	
+	@Option(name = "-e", usage = "EFG file path", aliases = "--efg-file", required = true)
 	private String efgFile = null;
 
-	@Option(name = "-t", usage = "<REQUIRED> testcase file path", aliases = "--testcase-file")
+	// this option is slightly different from ripper's
+	@Option(name = "-g", usage = "GUI file path", aliases = "--gui-file", required = true)
+	private String guiFile = "GUITAR-Default.GUI"; 
+	
+	@Option(name = "-t", usage = "testcase file path", aliases = "--testcase-file", required = true)
 	private String testcase = null;
 
 	@Option(name = "-gs", usage = "gui state file path", aliases = "--gui-state")
 	private String guiStateFile = "GUITAR-Default.STA";
-
-	@Option(name = "-l", usage = "log file name ", aliases = "--log-file")
-	private String logFile = Util.getTimeStamp() + ".log";;
-
-	@Option(name = "-i", usage = "initial waiting time for the application to get stablized before being ripped", aliases = "--wait-time")
-	private int initialWaitTime = 0;
 
 	@Option(name = "-d", usage = "step delay time", aliases = "--delay")
 	private int delay = 0;
@@ -58,15 +50,7 @@ public class SWTReplayerConfiguration extends GReplayerConfiguration{
 	private int testStepTimeout = 4000;
 	
 	// Application Under Test
-	@Option(name = "-c", usage = "<REQUIRED> main class name for the Application Under Test ", aliases = "--main-class")
-	private String mainClass = null;
-
-	@Option(name = "-a", usage = "arguments for the Application Under Test, separated by ';' ", aliases = "--arguments")
-	private String argumentList;
-
-	@Option(name = "-u", usage = "URLs for the Application Under Test, separated by ';' ", aliases = "--urls")
-	private String urlList;
-
+	
 	@Option(name = "-p", usage = "Pause after each step", aliases = "--pause")
 	private boolean pause = false;
 	
@@ -80,23 +64,16 @@ public class SWTReplayerConfiguration extends GReplayerConfiguration{
 //	@Option(name = "-cc", usage = "Cobertura coverage clean file ", aliases = "--coverage-clean")
 //	private String COVERAGE_CLEAN_FILE = null;
 	
+	// getters and setters
 	
-	public String getConfigFile() {
-		return configFile;
-	}
-
-	public void setConfigFile(String configFile) {
-		this.configFile = configFile;
+	public void setGuiFile(String guiFile) {
+		this.guiFile = guiFile;
 	}
 
 	public String getGuiFile() {
 		return guiFile;
 	}
-
-	public void setGuiFile(String guiFile) {
-		this.guiFile = guiFile;
-	}
-
+	
 	public String getEfgFile() {
 		return efgFile;
 	}
@@ -121,22 +98,6 @@ public class SWTReplayerConfiguration extends GReplayerConfiguration{
 		this.guiStateFile = guiStateFile;
 	}
 
-	public String getLogFile() {
-		return logFile;
-	}
-
-	public void setLogFile(String logFile) {
-		this.logFile = logFile;
-	}
-
-	public int getInitialWaitTime() {
-		return initialWaitTime;
-	}
-
-	public void setInitialWaitTime(int initialWaitTime) {
-		this.initialWaitTime = initialWaitTime;
-	}
-
 	public int getDelay() {
 		return delay;
 	}
@@ -159,30 +120,6 @@ public class SWTReplayerConfiguration extends GReplayerConfiguration{
 
 	public void setTestStepTimeout(int testStepTimeout) {
 		this.testStepTimeout = testStepTimeout;
-	}
-
-	public String getMainClass() {
-		return mainClass;
-	}
-
-	public void setMainClass(String mainClass) {
-		this.mainClass = mainClass;
-	}
-
-	public String getArgumentList() {
-		return argumentList;
-	}
-
-	public void setArgumentList(String argumentList) {
-		this.argumentList = argumentList;
-	}
-
-	public String getUrlList() {
-		return urlList;
-	}
-
-	public void setUrlList(String urlList) {
-		this.urlList = urlList;
 	}
 
 	public boolean getPause() {

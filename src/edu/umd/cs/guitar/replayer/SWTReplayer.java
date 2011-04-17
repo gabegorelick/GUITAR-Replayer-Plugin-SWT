@@ -19,238 +19,172 @@
  */
 package edu.umd.cs.guitar.replayer;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.kohsuke.args4j.CmdLineException;
 import org.xml.sax.SAXException;
 
-import edu.umd.cs.guitar.exception.GException;
 import edu.umd.cs.guitar.model.GIDGenerator;
-import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.model.IO;
-import edu.umd.cs.guitar.model.SWTApplication;
-import edu.umd.cs.guitar.model.SWTConstants;
 import edu.umd.cs.guitar.model.SWTDefaultIDGenerator;
-import edu.umd.cs.guitar.model.data.AttributesType;
-import edu.umd.cs.guitar.model.data.ComponentListType;
-import edu.umd.cs.guitar.model.data.ComponentType;
-import edu.umd.cs.guitar.model.data.Configuration;
-import edu.umd.cs.guitar.model.data.FullComponentType;
 import edu.umd.cs.guitar.model.data.TestCase;
-import edu.umd.cs.guitar.model.wrapper.AttributesTypeWrapper;
-import edu.umd.cs.guitar.model.wrapper.ComponentTypeWrapper;
 import edu.umd.cs.guitar.replayer.monitor.GTestMonitor;
 import edu.umd.cs.guitar.replayer.monitor.PauseMonitor;
 import edu.umd.cs.guitar.replayer.monitor.StateMonitorFull;
 import edu.umd.cs.guitar.replayer.monitor.TimeMonitor;
+import edu.umd.cs.guitar.ripper.SWTApplicationRunner;
+import edu.umd.cs.guitar.ripper.SWTGuitarExecutor;
 import edu.umd.cs.guitar.util.GUITARLog;
 
-public class SWTReplayer {
-	
+/**
+ * Adapts a {@link Replayer} for use with SWT GUIs. 
+ * 
+ * @author Gabe Gorelick
+ *
+ */
+public class SWTReplayer extends SWTGuitarExecutor {
+
 	private final SWTReplayerConfiguration config;
-	private final SWTApplication application;
+	private final SWTReplayerMonitor monitor;
+	private final Replayer replayer;
+
+	/**
+	 * Constructs a new <code>SWTReplayer</code>. This constructor is equivalent
+	 * to
+	 * 
+	 * <pre>
+	 * SWTReplayer(config, Thread.currentThread())
+	 * </pre>
+	 * 
+	 * Consequently, this constructor must be called on the same thread that the
+	 * application under test is running on (usually the <code>main</code>
+	 * thread).
+	 * 
+	 * @param config
+	 *            configuration
+	 * 
+	 * @see SWTApplicationRunner
+	 */
+	public SWTReplayer(SWTReplayerConfiguration config) {
+		this(config, Thread.currentThread());
+	}
 	
+	/**
+	 * Constructs a new <code>SWTRreplayer</code>. The thread passed in is the
+	 * thread on which the SWT application under test runs. This is almost
+	 * always the <code>main</code> thread (and actually must be the
+	 * <code>main</code> thread on Cocoa).
+	 * 
+	 * @param config
+	 *            configuration
+	 * @param guiThread
+	 *            thread the GUI runs on
+	 * 
+	 * @see SWTApplicationRunner
+	 */
 	public SWTReplayer(SWTReplayerConfiguration config, Thread guiThread) {
+		super(config, guiThread);
 		this.config = config;
-		this.application = new SWTApplication(config.getMainClass(), guiThread);
+		this.monitor = new SWTReplayerMonitor(config, getApplication());
+		replayer = initReplayer();
 	}
 
-	public void execute() throws CmdLineException {
-
-		long nStartTime = System.currentTimeMillis();
-		checkArgs();
-		setupEnv();
-
-		System.setProperty(GUITARLog.LOGFILE_NAME_SYSTEM_PROPERTY, config.getLogFile());
-		printInfo();
-
+	// initialize the replayer
+	private Replayer initReplayer() {
 		TestCase tc = (TestCase) IO.readObjFromFile(config.getTestcase(), TestCase.class);
-
-		Replayer replayer;
+		if (tc == null) {
+			GUITARLog.log.error("Test case not found");
+			throw new RuntimeException(); // TODO throw better exception
+		}
+		
+		Replayer replayer = null;
+		
 		try {
-			if (tc == null) {
-				GUITARLog.log.error("Test case not found");
-				throw new FileNotFoundException();
-			}
-
 			replayer = new Replayer(tc, config.getGuiFile(), config.getEfgFile());
-			GReplayerMonitor sMonitor = new SWTReplayerMonitor(config, application);
 			
-			GTestMonitor stateMonitor = new StateMonitorFull(config.getGuiStateFile(),
-					                                         config.getDelay());
-			
-			GIDGenerator idGenerator = SWTDefaultIDGenerator.getInstance();
-			((StateMonitorFull)stateMonitor).setIdGenerator(idGenerator);
-			
-			replayer.addTestMonitor(stateMonitor);
+			// TODO subclass StateMonitorFull and remove dependency on Jemmy
+			StateMonitorFull stateMonitor = new StateMonitorFull(
+					config.getGuiStateFile(), config.getDelay());
 
+			GIDGenerator idGenerator = SWTDefaultIDGenerator.getInstance();
+			stateMonitor.setIdGenerator(idGenerator);
+
+			replayer.addTestMonitor(stateMonitor);
+			
 			// Add a pause monitor and ignore time out monitor if needed
 			if (config.getPause()) {
 				GTestMonitor pauseMonitor = new PauseMonitor();
 				replayer.addTestMonitor(pauseMonitor);
 			} else {
 				// Add a timeout monitor
-				GTestMonitor timeoutMonitor = new TimeMonitor(config.getTestStepTimeout(),
-						                                      config.getTestCaseTimeout());
+				GTestMonitor timeoutMonitor = new TimeMonitor(
+						config.getTestStepTimeout(),
+						config.getTestCaseTimeout());
+				
 				replayer.addTestMonitor(timeoutMonitor);
 			}
-
-//			// Add a Cobertura code coverage collector
-//			boolean isMeasureCoverage = (SWTReplayerConfiguration.COVERAGE_DIR != null
-//					                     && SWTReplayerConfiguration.COVERAGE_CLEAN_FILE != null);
-//
-//			if (isMeasureCoverage) {
-//				GTestMonitor coverageMonitor = new CoberturaCoverageMonitor(SWTReplayerConfiguration.COVERAGE_CLEAN_FILE,
-//						                                                    SWTReplayerConfiguration.COVERAGE_DIR);
-//				replayer.addTestMonitor(coverageMonitor);
-//			}
-
-			// Set up string comparator
-//			jMonitor.setUseReg(SWTReplayerConfiguration.REG_USED);
 			
-			replayer.setMonitor(sMonitor);
+			replayer.setMonitor(monitor);
 			replayer.setTimeOut(config.getTestCaseTimeout());
-
-			replayer.execute();
 			
-			GUITARLog.log.info("NORMALLY TERMINATED");
-
-		} catch (ParserConfigurationException e1) {
-			e1.printStackTrace();
-		} catch (SAXException e1) {
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		} catch (GException e) {
-			GUITARLog.log.error("GUITAR Exception thrown", e);
-		} catch (Exception e) {
-			GUITARLog.log.error("General Exception thrown", e);
+		} catch (ParserConfigurationException e) {
+			GUITARLog.log.error(e);
+		} catch (SAXException e) {
+			GUITARLog.log.error(e);
+		} catch (IOException e) {
+			GUITARLog.log.error(e);
 		}
-
-		// Elapsed time:
-		long nEndTime = System.currentTimeMillis();
-		long nDuration = nEndTime - nStartTime;
-		DateFormat df = new SimpleDateFormat("HH : mm : ss: SS");
-		df.setTimeZone(TimeZone.getTimeZone("GMT"));
-		GUITARLog.log.info("Time Elapsed: " + df.format(nDuration));
-
-		printInfo();
+		
+		return replayer;		
 	}
-
-	private void printInfo() {
+	
+	/**
+	 * Do some logging before the replayer is executed.
+	 */
+	@Override
+	protected void onBeforeExecute() {
+		// do setup
+		super.onBeforeExecute();
+		
 		GUITARLog.log.info("Testcase: " + config.getTestcase());
 		GUITARLog.log.info("Log file: " + config.getLogFile());
 		GUITARLog.log.info("GUI state file: " + config.getGuiStateFile());
 	}
-
+	
 	/**
+	 * Execute the replayer.
 	 * 
-	 * Check for command-line arguments
-	 * 
-	 * @throws CmdLineException
-	 * 
+	 * @see Replayer#execute()
 	 */
-	private void checkArgs() throws CmdLineException {
-		// Check argument
-		if (GReplayerConfiguration.HELP) {
-			throw new CmdLineException("");
-		}
-
-		boolean isPrintUsage = false;
-
-		if (config.getMainClass() == null) {
-			System.err.println("missing '-c' argument");
-			isPrintUsage = true;
-		}
-
-		if (config.getGuiFile() == null) {
-			System.err.println("missing '-g' argument");
-			isPrintUsage = true;
-		}
-
-		if (config.getEfgFile() == null) {
-			System.err.println("missing '-e' argument");
-			isPrintUsage = true;
-		}
-
-		if (config.getTestcase() == null) {
-			System.err.println("missing '-t' argument");
-			isPrintUsage = true;
-		}
+	@Override
+	public void onExecute() {
+		try {		
+			replayer.execute();
+		} catch (Exception e) {
+			GUITARLog.log.error(e);
+		} 		
+	}
+	
+	/**
+	 * Do some logging after the replayer has finished.
+	 */
+	@Override
+	protected void onAfterExecute() {
+		GUITARLog.log.info("NORMALLY TERMINATED");
 		
-//		boolean isNotMeasureCoverage = SWTReplayerConfiguration.COVERAGE_DIR == null
-//				                       && SWTReplayerConfiguration.COVERAGE_CLEAN_FILE == null;
-//		boolean isMeasureCoverage = SWTReplayerConfiguration.COVERAGE_DIR != null
-//				                    && SWTReplayerConfiguration.COVERAGE_CLEAN_FILE != null;
-//
-//		if (!isMeasureCoverage && !isNotMeasureCoverage) {
-//			System.err
-//					.println("'-cd,-cc' should be either all set or all unset");
-//			isPrintUsage = true;
-//		}
-
-		if (isPrintUsage)
-			throw new CmdLineException("");
+		// print time elapsed
+		super.onAfterExecute();		
 	}
 
 	/**
-     * 
-     */
-	private void setupEnv() {
-		// Terminal list
-		// Try to find absolute path first then relative path
-
-		Configuration conf;
-
-		conf = (Configuration) IO.readObjFromFile(
-				config.getConfigFile(), Configuration.class);
-		if (conf == null) {
-			InputStream in = getClass().getClassLoader().getResourceAsStream(
-					config.getConfigFile());
-			conf = (Configuration) IO.readObjFromFile(in, Configuration.class);
-		}
-
-		List<FullComponentType> cTerminalList = conf.getTerminalComponents()
-				.getFullComponent();
-
-		for (FullComponentType cTermWidget : cTerminalList) {
-			ComponentType component = cTermWidget.getComponent();
-			AttributesType attributes = component.getAttributes();
-			if (attributes != null)
-				SWTConstants.sTerminalWidgetSignature
-						.add(new AttributesTypeWrapper(component
-								.getAttributes()));
-		}
-
-		List<FullComponentType> lIgnoredComps = new ArrayList<FullComponentType>();
-		List<String> ignoredWindow = new ArrayList<String>();
-
-		ComponentListType ignoredAll = conf.getIgnoredComponents();
-
-		if (ignoredAll != null)
-			for (FullComponentType fullComp : ignoredAll.getFullComponent()) {
-				ComponentType comp = fullComp.getComponent();
-
-				if (comp == null) {
-					ComponentType win = fullComp.getWindow();
-					ComponentTypeWrapper winAdapter = new ComponentTypeWrapper(
-							win);
-					String ID = winAdapter
-							.getFirstValueByName(GUITARConstants.ID_TAG_NAME);
-					if (ID != null)
-						SWTConstants.sIgnoredWins.add(ID);
-
-				} else
-					lIgnoredComps.add(fullComp);
-			}
+	 * Get the <code>SWTReplayerMonitor</code> associated with this
+	 * <code>SWTReplayer</code>.
+	 * 
+	 * @return the monitor used to communicate with the GUI
+	 */
+	public SWTReplayerMonitor getMonitor() {
+		return monitor;
 	}
+
 }
