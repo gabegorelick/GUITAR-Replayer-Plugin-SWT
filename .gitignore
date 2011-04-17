@@ -1,4 +1,8 @@
 /bin
+/dist
+
+/lib/swtmodel.jar
+/lib/swtripper.jar
 
 # Eclipse's .classpath contains developer-specific paths (e.g. to linked sources)
 /.classpath
