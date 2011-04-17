@@ -1,5 +1,3 @@
-package edu.umd.cs.guitar.replayer;
-
 /*	
  *  Copyright (c) 2009-@year@. The GUITAR group at the University of Maryland. Names of owners of this group may
  *  be obtained by sending an e-mail to atif@cs.umd.edu
@@ -19,19 +17,16 @@ package edu.umd.cs.guitar.replayer;
  *	IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR 
  *	THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
  */
+package edu.umd.cs.guitar.replayer;
 
 import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.swt.widgets.Shell;
 
-import edu.umd.cs.guitar.event.EventManager;
 import edu.umd.cs.guitar.event.GEvent;
-import edu.umd.cs.guitar.exception.ApplicationConnectException;
-import edu.umd.cs.guitar.model.GUITARConstants;
 import edu.umd.cs.guitar.model.GWindow;
 import edu.umd.cs.guitar.model.SWTApplication;
 import edu.umd.cs.guitar.model.SWTConstants;
@@ -39,33 +34,31 @@ import edu.umd.cs.guitar.model.SWTWindow;
 import edu.umd.cs.guitar.model.data.AttributesType;
 import edu.umd.cs.guitar.model.data.ComponentType;
 import edu.umd.cs.guitar.model.data.PropertyType;
+import edu.umd.cs.guitar.ripper.SWTMonitor;
 import edu.umd.cs.guitar.util.GUITARLog;
 
 /**
- * Replayer monitor for Java SWT application
+ * Monitor for {@link SWTReplayer} to handle SWT specific features. Adapted from
+ * <code>JFCReplayerMonitor</code>.
  * 
+ * @author Gabe Gorelick
  */
 public class SWTReplayerMonitor extends GReplayerMonitor {
 
-	private static final int INITIAL_DELAY = 1000;
-	
-	
-	/**
-	 * Delay for widget searching loop
-	 */
-	private static final int DELAY_STEP = 50;
-
-	private SWTReplayerConfiguration config;
 	private final SWTApplication application;
+	
+	// monitor to delegate actions shared with ripper to
+	private final SWTMonitor monitor;
 
-	public SWTReplayerMonitor(SWTReplayerConfiguration config,
-			SWTApplication application) {
-		this.config = config;
-		this.application = application;
+	private SecurityManager oldSecurityManager;
+	
+	public SWTReplayerMonitor(SWTReplayerConfiguration config, SWTApplication app) {
+		this.application = app;
+		this.monitor = new SWTMonitor(config, app);
 	}
 
 	/**
-	 * Class used to disable System.exit()
+	 * Class used to disable calls to System.exit().
 	 * 
 	 * @author Bao Nguyen
 	 * 
@@ -73,8 +66,6 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 	private static class ExitTrappedException extends SecurityException {
 		private static final long serialVersionUID = 1L;
 	}
-
-	SecurityManager oldSecurityManager;
 
 	@Override
 	public void setUp() {
@@ -106,26 +97,14 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 			}
 		};
 		System.setSecurityManager(securityManager);
-
-		// Registering default supported events
-		EventManager em = EventManager.getInstance();
-
-		for (Class<? extends GEvent> event : SWTConstants.DEFAULT_SUPPORTED_EVENTS) {
-			em.registerEvent(event);
-		}
-
+		
+		monitor.registerEvents();
 	}
 
 	@Override
 	public void cleanUp() {
 		System.setSecurityManager(oldSecurityManager);
-		application.getDisplay().syncExec(new Runnable() {
-			@Override
-			public void run() {
-				application.getDisplay().dispose();
-			}
-		});
-		GUITARLog.log.info("Display disposed");
+		monitor.cleanUp();
 	}
 
 	@Override
@@ -134,10 +113,12 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 		try {
 			Class<?> c = Class.forName(actionName);
 			Object action = c.newInstance();
-
 			retAction = (GEvent) action;
-
-		} catch (Exception e) {
+		} catch (ClassNotFoundException e) {
+			GUITARLog.log.error("Error in getting action", e);
+		} catch (InstantiationException e) {
+			GUITARLog.log.error("Error in getting action", e);
+		} catch (IllegalAccessException e) {
 			GUITARLog.log.error("Error in getting action", e);
 		}
 
@@ -152,10 +133,8 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 
 	@Override
 	public GWindow getWindow(String sWindowTitle) {
-
 		GWindow retGXWindow = null;
 		while (retGXWindow == null) {
-
 			final Shell[][] shells = new Shell[1][];
 
 			application.getDisplay().syncExec(new Runnable() {
@@ -216,7 +195,7 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 		}
 
 		if (isUseReg) {
-			if (isRegMatched(title, sWindowID)) {
+			if (Pattern.matches(sWindowID, title)) {
 				return parent;
 			}
 		} else {
@@ -244,48 +223,13 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 		
 		return retShell;
 	}
-
+	
 	@Override
 	public void connectToApplication() {
-		GUITARLog.log.info("Loading URL....");
-
 		application.connect();
-
-		GUITARLog.log.info("Initial waiting for " + config.getInitialWaitTime()
-				+ "ms");
-
-		try {
-			Thread.sleep(config.getInitialWaitTime());
-		} catch (InterruptedException e) {
-			GUITARLog.log.error(e);
-			throw new ApplicationConnectException();
-		}
-
-	}
-
-	/**
-	 * Check if a string is match by a regular expression temporarily used for
-	 * matching window titles. Should move to some more general modules for
-	 * future use.
-	 * 
-	 * <p>
-	 * 
-	 * @param input
-	 * @param regExp
-	 * @return
-	 */
-	private boolean isRegMatched(String input, String regExp) {
-
-		Pattern pattern;
-		Matcher matcher;
-		pattern = Pattern.compile(regExp);
-		matcher = pattern.matcher(input);
-		if (matcher.matches())
-			return true;
-
-		return false;
 	}
 	
+	@Override
 	public SWTApplication getApplication() {
 		return application;
 	}
