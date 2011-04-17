@@ -249,27 +249,7 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 	public void connectToApplication() {
 		GUITARLog.log.info("Loading URL....");
 
-		// TODO refactor with SWTRipperMonitor
-		String[] URLs;
-		if (config.getUrlList() != null)
-			URLs = config.getUrlList()
-					.split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
-		else
-			URLs = new String[0];
-
-		// application = new SWTApplication(config.MAIN_CLASS, null);
-
-		String[] args;
-
-		if (config.getArgumentList() != null)
-			args = config.getArgumentList()
-					.split(GUITARConstants.CMD_ARGUMENT_SEPARATOR);
-		else
-			args = new String[0];
-
-		GUITARLog.log.info("Loading URL.... DONE");
-
-		application.connect(args);
+		application.connect();
 
 		GUITARLog.log.info("Initial waiting for " + config.getInitialWaitTime()
 				+ "ms");
