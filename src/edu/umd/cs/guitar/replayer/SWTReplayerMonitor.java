@@ -98,7 +98,7 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 		};
 		System.setSecurityManager(securityManager);
 		
-		monitor.registerEvents();
+//		monitor.registerEvents();
 	}
 
 	@Override
