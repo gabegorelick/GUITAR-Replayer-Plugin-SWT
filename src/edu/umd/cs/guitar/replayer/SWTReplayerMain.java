@@ -28,15 +28,20 @@ import org.kohsuke.args4j.CmdLineParser;
 public class SWTReplayerMain {
 
 	/**
+	 * Running the SWT Replayer
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		//replayer configuration received from the command line parser
 		SWTReplayerConfiguration configuration = new SWTReplayerConfiguration();
 		CmdLineParser parser = new CmdLineParser(configuration);
 		
-		
+		//an instance of our swt replayer class
 		SWTReplayer swtReplayer = new SWTReplayer(configuration, Thread.currentThread());
 
+		/**
+		 * we parse and execute. Any issues are reported through the system.err
+		 */
 		try {
 			parser.parseArgument(args);
 			swtReplayer.execute();

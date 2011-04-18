@@ -23,7 +23,12 @@ import org.kohsuke.args4j.Option;
 
 import edu.umd.cs.guitar.ripper.SWTGuitarConfiguration;
 
-
+/**
+ * Configuration object for the SWT Replayer 
+ * 
+ * @author Gabe Gorelick - Feldman
+ *
+ */
 public class SWTReplayerConfiguration extends SWTGuitarConfiguration {
 
 	// GUITAR runtime parameters	
@@ -34,18 +39,23 @@ public class SWTReplayerConfiguration extends SWTGuitarConfiguration {
 	@Option(name = "-g", usage = "GUI file path", aliases = "--gui-file", required = true)
 	private String guiFile = "GUITAR-Default.GUI"; 
 	
+	//test case file path
 	@Option(name = "-t", usage = "testcase file path", aliases = "--testcase-file", required = true)
 	private String testcase = null;
-
+	
+	// gui state file path
 	@Option(name = "-gs", usage = "gui state file path", aliases = "--gui-state")
 	private String guiStateFile = "GUITAR-Default.STA";
 
+	//delay time to run
 	@Option(name = "-d", usage = "step delay time", aliases = "--delay")
 	private int delay = 0;
 
+	//timeout for whichever test case
 	@Option(name = "-to", usage = "testcase timeout", aliases = "--testcase-timeout")
 	private int testCaseTimeout = 30000;
 
+	//test step timeout
 	@Option(name = "-so", usage = "test steptimeout", aliases = "--teststep-timeout")
 	private int testStepTimeout = 4000;
 	
@@ -64,8 +74,10 @@ public class SWTReplayerConfiguration extends SWTGuitarConfiguration {
 //	@Option(name = "-cc", usage = "Cobertura coverage clean file ", aliases = "--coverage-clean")
 //	private String COVERAGE_CLEAN_FILE = null;
 	
-	// getters and setters
+
 	
+	// getters and setters
+
 	public void setGuiFile(String guiFile) {
 		this.guiFile = guiFile;
 	}

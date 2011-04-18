@@ -90,7 +90,10 @@ public class SWTReplayer extends SWTGuitarExecutor {
 		replayer = initReplayer();
 	}
 
-	// initialize the replayer
+	/**
+	 * Initializes the replayer
+	 * 
+	 */
 	private Replayer initReplayer() {
 		TestCase tc = (TestCase) IO.readObjFromFile(config.getTestcase(), TestCase.class);
 		if (tc == null) {

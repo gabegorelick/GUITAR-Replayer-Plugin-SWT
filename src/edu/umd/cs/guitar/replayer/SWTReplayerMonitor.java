@@ -46,7 +46,7 @@ import edu.umd.cs.guitar.util.GUITARLog;
  * 
  */
 public class SWTReplayerMonitor extends GReplayerMonitor {
-
+	
 	private static final int INITIAL_DELAY = 1000;
 	
 	
@@ -58,6 +58,13 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 	private SWTReplayerConfiguration config;
 	private final SWTApplication application;
 
+	/**
+	 * Instantiation. We set our configuration file for our replayer as our parameter
+	 * and our application as that from the parameter as well.
+	 * 
+	 * @param config
+	 * @param application
+	 */
 	public SWTReplayerMonitor(SWTReplayerConfiguration config,
 			SWTApplication application) {
 		this.config = config;
@@ -76,6 +83,9 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 
 	SecurityManager oldSecurityManager;
 
+	/**
+	 * Setting up the Monitor. Setting up security manager and event manager.
+	 */
 	@Override
 	public void setUp() {
 		GUITARLog.log.info("Setting up SWTReplayer...");
@@ -116,6 +126,10 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 
 	}
 
+	/**
+	 * disposes the display and sets the security manager to the one created 
+	 * at creation
+	 */
 	@Override
 	public void cleanUp() {
 		System.setSecurityManager(oldSecurityManager);
@@ -128,6 +142,12 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 		GUITARLog.log.info("Display disposed");
 	}
 
+	/**
+	 * returns a GEvent for the action the user provides
+	 * 
+	 * @param actionName
+	 * 		action that user wants to track
+	 */
 	@Override
 	public GEvent getAction(String actionName) {
 		GEvent retAction = null;
@@ -144,12 +164,21 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 		return retAction;
 	}
 
+	/**
+	 * Does nothing at the moment
+	 */
 	@Override
 	public Object getArguments(String action) {
 		// not being used by JFC
 		return null;
 	}
 
+	/**
+	 * Returns the window corresponding to the provided title.
+	 * 
+	 * @param sWindowTitle
+	 * 			title of the window to return
+	 */
 	@Override
 	public GWindow getWindow(String sWindowTitle) {
 
@@ -177,6 +206,13 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 		return retGXWindow;
 	}
 
+	/**
+	 * Returns the id properties for the component type in a list object of property types.
+	 * 
+	 * @param comp
+	 * 		component type 
+	 * @return List 
+	 */
 	@Override
 	public List<PropertyType> selectIDProperties(ComponentType comp) {
 		if (comp == null) {
@@ -245,6 +281,10 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 		return retShell;
 	}
 
+	/**
+	 * connection to application through parameter url
+	 * 
+	 */
 	@Override
 	public void connectToApplication() {
 		GUITARLog.log.info("Loading URL....");
@@ -306,6 +346,9 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 		return false;
 	}
 	
+	/**
+	 * returns the application
+	 */
 	public SWTApplication getApplication() {
 		return application;
 	}
