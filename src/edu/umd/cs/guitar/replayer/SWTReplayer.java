@@ -138,9 +138,12 @@ public class SWTReplayer extends SWTGuitarExecutor {
 		
 		return replayer;		
 	}
-	
+
 	/**
-	 * Do some logging before the replayer is executed.
+	 * {@inheritDoc}
+	 * 
+	 * This implementation calls its parent's {@code onBeforeExecute} and then
+	 * just does some logging.
 	 */
 	@Override
 	protected void onBeforeExecute() {
@@ -183,6 +186,7 @@ public class SWTReplayer extends SWTGuitarExecutor {
 	 * 
 	 * @return the monitor used to communicate with the GUI
 	 */
+	@Override
 	public SWTReplayerMonitor getMonitor() {
 		return monitor;
 	}
