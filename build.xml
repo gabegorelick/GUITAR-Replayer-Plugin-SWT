@@ -43,6 +43,7 @@
 		<pathelement location="${lib.dir}/log4j-1.2.15.jar"/>
 		<pathelement location="${lib.dir}/${swt.jar}"/>
 		<pathelement location="${lib.dir}/${swtmodel.jar.name}"/>
+		<pathelement location="${lib.dir}/${swtripper.jar.name}"/>
 	</path>
 
 	<target name="init">
