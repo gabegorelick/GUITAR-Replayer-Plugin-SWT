@@ -19,39 +19,48 @@
  */
 package edu.umd.cs.guitar.replayer;
 
+import java.net.URL;
+
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.spi.StringArrayOptionHandler;
+
+import edu.umd.cs.guitar.ripper.SWTApplicationRunner;
+import edu.umd.cs.guitar.ripper.URLArrayOptionHandler;
 
 /**
  * Entry class for SWTReplayer
  */
 public class SWTReplayerMain {
 
+	private SWTReplayerMain() {
+		// this space intentionally left blank
+	}
+	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		SWTReplayerConfiguration configuration = new SWTReplayerConfiguration();
-		CmdLineParser parser = new CmdLineParser(configuration);
-		
-		
-		SWTReplayer swtReplayer = new SWTReplayer(configuration, Thread.currentThread());
-
-		try {
-			parser.parseArgument(args);
-			swtReplayer.execute();
-		} catch (CmdLineException e) {
-			System.err.println(e.getMessage());
-			System.err.println();
-			System.err
-					.println("Usage: java [JVM options] "
-							+ SWTReplayerMain.class.getName()
-							+ " [Relayer options] \n");
-			System.err.println("where [Replayer options] include:");
-			System.err.println();
-			parser.printUsage(System.err);
-		}
-		System.exit(0);
+		CmdLineParser.registerHandler(String[].class, StringArrayOptionHandler.class);
+    	CmdLineParser.registerHandler(URL[].class, URLArrayOptionHandler.class);
+    	
+        SWTReplayerConfiguration configuration = new SWTReplayerConfiguration();
+        CmdLineParser parser = new CmdLineParser(configuration);
+        
+        try {
+            parser.parseArgument(args);
+            if (configuration.getHelp()) {
+            	parser.printUsage(System.err);
+            	return;
+            }
+               
+            SWTReplayer swtRipper = new SWTReplayer(configuration, Thread.currentThread());
+            new SWTApplicationRunner(swtRipper).run();
+        } catch (CmdLineException e) {
+            System.err.println(e.getMessage());
+            System.err.println();
+            parser.printUsage(System.err);
+        }
 	}
 
 }
