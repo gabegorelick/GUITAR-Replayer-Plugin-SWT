@@ -94,8 +94,7 @@ public class SWTReplayer extends SWTGuitarExecutor {
 	private Replayer initReplayer() {
 		TestCase tc = (TestCase) IO.readObjFromFile(config.getTestcase(), TestCase.class);
 		if (tc == null) {
-			GUITARLog.log.error("Test case not found");
-			throw new RuntimeException(); // TODO throw better exception
+			throw new TestCaseNotFoundException("Test case " + config.getTestcase() + " not found");
 		}
 		
 		Replayer replayer = null;
