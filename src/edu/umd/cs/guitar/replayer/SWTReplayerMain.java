@@ -25,7 +25,7 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
-import edu.umd.cs.guitar.ripper.SWTApplicationRunner;
+import edu.umd.cs.guitar.ripper.SWTGuitarRunner;
 import edu.umd.cs.guitar.ripper.URLArrayOptionHandler;
 
 /**
@@ -55,7 +55,7 @@ public class SWTReplayerMain {
             }
                
             SWTReplayer swtRipper = new SWTReplayer(configuration, Thread.currentThread());
-            new SWTApplicationRunner(swtRipper).run();
+            new SWTGuitarRunner(swtRipper).run();
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
             System.err.println();

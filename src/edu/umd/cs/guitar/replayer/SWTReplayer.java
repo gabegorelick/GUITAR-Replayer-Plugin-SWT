@@ -33,7 +33,7 @@ import edu.umd.cs.guitar.replayer.monitor.GTestMonitor;
 import edu.umd.cs.guitar.replayer.monitor.PauseMonitor;
 import edu.umd.cs.guitar.replayer.monitor.StateMonitorFull;
 import edu.umd.cs.guitar.replayer.monitor.TimeMonitor;
-import edu.umd.cs.guitar.ripper.SWTApplicationRunner;
+import edu.umd.cs.guitar.ripper.SWTGuitarRunner;
 import edu.umd.cs.guitar.ripper.SWTGuitarExecutor;
 import edu.umd.cs.guitar.util.GUITARLog;
 
@@ -64,7 +64,7 @@ public class SWTReplayer extends SWTGuitarExecutor {
 	 * @param config
 	 *            configuration
 	 * 
-	 * @see SWTApplicationRunner
+	 * @see SWTGuitarRunner
 	 */
 	public SWTReplayer(SWTReplayerConfiguration config) {
 		this(config, Thread.currentThread());
@@ -81,7 +81,7 @@ public class SWTReplayer extends SWTGuitarExecutor {
 	 * @param guiThread
 	 *            thread the GUI runs on
 	 * 
-	 * @see SWTApplicationRunner
+	 * @see SWTGuitarRunner
 	 */
 	public SWTReplayer(SWTReplayerConfiguration config, Thread guiThread) {
 		super(config, guiThread);
