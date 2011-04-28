@@ -22,6 +22,7 @@ package edu.umd.cs.guitar.replayer;
 import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
 import org.eclipse.swt.widgets.Shell;
@@ -42,6 +43,8 @@ import edu.umd.cs.guitar.util.GUITARLog;
  * <code>JFCReplayerMonitor</code>.
  * 
  * @author Gabe Gorelick
+ * 
+ * @see SWTReplayer
  */
 public class SWTReplayerMonitor extends GReplayerMonitor {
 
@@ -51,7 +54,15 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 	private final SWTMonitor monitor;
 
 	private SecurityManager oldSecurityManager;
-	
+
+	/**
+	 * Construct a new {@code SWTReplayerMonitor}.
+	 * 
+	 * @param config
+	 *            replayer configuration
+	 * @param app
+	 *            the {@code SWTApplication} for the GUI under test
+	 */
 	public SWTReplayerMonitor(SWTReplayerConfiguration config, SWTApplication app) {
 		this.application = app;
 		this.monitor = new SWTMonitor(config, app);
@@ -67,6 +78,9 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 		private static final long serialVersionUID = 1L;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void setUp() {
 		GUITARLog.log.info("Setting up SWTReplayer...");
@@ -97,16 +111,29 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 			}
 		};
 		System.setSecurityManager(securityManager);
-		
-//		monitor.registerEvents();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * This implementation removes the security manager used to trap calls to
+	 * {@link System#exit(int) System.exit} and then calls
+	 * {@link SWTMonitor#cleanUp()}.
+	 */
 	@Override
 	public void cleanUp() {
 		System.setSecurityManager(oldSecurityManager);
 		monitor.cleanUp();
 	}
 
+	/**
+	 * Get a {@code GEvent} given its name. Returns {@code null} if no action
+	 * with the given name could be found.
+	 * 
+	 * @param actionName
+	 *            the fully qualified name of the event, passed to
+	 *            {@link Class#forName(String)}
+	 */
 	@Override
 	public GEvent getAction(String actionName) {
 		GEvent retAction = null;
@@ -125,27 +152,39 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 		return retAction;
 	}
 
+	/**
+	 * This method is not used by SWTGuitar.
+	 * 
+	 * @param action
+	 *            this parameter is ignored
+	 * @return {@code null}
+	 */
 	@Override
-	public Object getArguments(String action) {
+	public final Object getArguments(String action) {
 		// not being used by JFC
 		return null;
 	}
 
+	/**
+	 * Get a window given a title.
+	 * @param windowTitle the title of the window
+	 * @return the window with the given title
+	 */
 	@Override
-	public GWindow getWindow(String sWindowTitle) {
+	public GWindow getWindow(String windowTitle) {
 		GWindow retGXWindow = null;
 		while (retGXWindow == null) {
-			final Shell[][] shells = new Shell[1][];
+			final AtomicReference<Shell[]> shells = new AtomicReference<Shell[]>();
 
 			application.getDisplay().syncExec(new Runnable() {
 				@Override
 				public void run() {
-					shells[0] = application.getDisplay().getShells();
+					shells.set(application.getDisplay().getShells());
 				}
 			});
 
-			for (Shell s : shells[0]) {
-				Shell shell = getOwnedWindowByID(s, sWindowTitle);
+			for (Shell s : shells.get()) {
+				Shell shell = getOwnedWindowByID(s, windowTitle);
 				if (shell != null) {
 					retGXWindow = new SWTWindow(shell);
 					break;
@@ -156,6 +195,9 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 		return retGXWindow;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<PropertyType> selectIDProperties(ComponentType comp) {
 		if (comp == null) {
@@ -224,11 +266,21 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 		return retShell;
 	}
 	
+	/**
+	 * Connect to the application under test. This method simply calls
+	 * {@link SWTApplication#connect()}.
+	 */
 	@Override
 	public void connectToApplication() {
 		application.connect();
 	}
-	
+
+	/**
+	 * Return the {@code SWTApplication} used by the monitor to communicate with
+	 * the GUI.
+	 * 
+	 * @return the {@code SWTApplication} used to communicate with the GUI
+	 */
 	@Override
 	public SWTApplication getApplication() {
 		return application;

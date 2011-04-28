@@ -23,7 +23,15 @@ import org.kohsuke.args4j.Option;
 
 import edu.umd.cs.guitar.ripper.SWTGuitarConfiguration;
 
-
+/**
+ * Configuration specific to {@link SWTReplayer}. The configuration options
+ * held by this class can be set through its setter methods or by passing
+ * and instance of this class to an Args4j {@code CmdLineParser}.
+ * 
+ * @author Gabe Gorelick
+ * 
+ * @see SWTReplayerMain
+ */
 public class SWTReplayerConfiguration extends SWTGuitarConfiguration {
 
 	// GUITAR runtime parameters	
@@ -56,13 +64,6 @@ public class SWTReplayerConfiguration extends SWTGuitarConfiguration {
 	
 	@Option(name = "-r", usage = "Compare string using regular expression", aliases = "--regular-expression")
 	private boolean regUsed= false;
-
-	// Cobertura Coverage collection
-//	@Option(name = "-cd", usage = "Cobertura coverage output dir", aliases = "--coverage-dir")
-//	private String COVERAGE_DIR = null;
-//
-//	@Option(name = "-cc", usage = "Cobertura coverage clean file ", aliases = "--coverage-clean")
-//	private String COVERAGE_CLEAN_FILE = null;
 	
 	// getters and setters
 	

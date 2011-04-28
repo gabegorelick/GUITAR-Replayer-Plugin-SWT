@@ -29,16 +29,23 @@ import edu.umd.cs.guitar.ripper.SWTGuitarRunner;
 import edu.umd.cs.guitar.ripper.URLArrayOptionHandler;
 
 /**
- * Entry class for SWTReplayer
+ * Entry class for SWTReplayer.
+ * 
+ * @author Gabe Gorelick
  */
 public class SWTReplayerMain {
 
 	private SWTReplayerMain() {
 		// this space intentionally left blank
 	}
-	
+
 	/**
+	 * Used by scripts to run the replayer. Can also be invoked manually on the
+	 * command line by users, but this is not recommended as then the user would
+	 * have to manage SWTGuitar's classpath.
+	 * 
 	 * @param args
+	 *            command line arguments
 	 */
 	public static void main(String[] args) {
 		CmdLineParser.registerHandler(String[].class, StringArrayOptionHandler.class);
