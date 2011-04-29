@@ -31,10 +31,9 @@ import edu.umd.cs.guitar.model.SWTDefaultIDGenerator;
 import edu.umd.cs.guitar.model.data.TestCase;
 import edu.umd.cs.guitar.replayer.monitor.GTestMonitor;
 import edu.umd.cs.guitar.replayer.monitor.PauseMonitor;
-import edu.umd.cs.guitar.replayer.monitor.StateMonitorFull;
-import edu.umd.cs.guitar.replayer.monitor.TimeMonitor;
-import edu.umd.cs.guitar.ripper.SWTGuitarRunner;
+import edu.umd.cs.guitar.replayer.monitor.SWTStateMonitorFull;
 import edu.umd.cs.guitar.ripper.SWTGuitarExecutor;
+import edu.umd.cs.guitar.ripper.SWTGuitarRunner;
 import edu.umd.cs.guitar.util.GUITARLog;
 
 /**
@@ -102,8 +101,7 @@ public class SWTReplayer extends SWTGuitarExecutor {
 		try {
 			replayer = new Replayer(tc, config.getGuiFile(), config.getEfgFile());
 			
-			// TODO subclass StateMonitorFull and remove dependency on Jemmy
-			StateMonitorFull stateMonitor = new StateMonitorFull(
+			SWTStateMonitorFull stateMonitor = new SWTStateMonitorFull(
 					config.getGuiStateFile(), config.getDelay());
 
 			GIDGenerator idGenerator = SWTDefaultIDGenerator.getInstance();
@@ -115,15 +113,8 @@ public class SWTReplayer extends SWTGuitarExecutor {
 			if (config.getPause()) {
 				GTestMonitor pauseMonitor = new PauseMonitor();
 				replayer.addTestMonitor(pauseMonitor);
-			} else {
-				// Add a timeout monitor
-				GTestMonitor timeoutMonitor = new TimeMonitor(
-						config.getTestStepTimeout(),
-						config.getTestCaseTimeout());
-				
-				replayer.addTestMonitor(timeoutMonitor);
-			}
-			
+			} 
+						
 			replayer.setMonitor(monitor);
 			replayer.setTimeOut(config.getTestCaseTimeout());
 			
