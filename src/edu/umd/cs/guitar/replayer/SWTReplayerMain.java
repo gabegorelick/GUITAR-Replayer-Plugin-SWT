@@ -61,8 +61,8 @@ public class SWTReplayerMain {
             	return;
             }
                
-            SWTReplayer swtRipper = new SWTReplayer(configuration, Thread.currentThread());
-            new SWTGuitarRunner(swtRipper).run();
+            SWTReplayer replayer = new SWTReplayer(configuration, Thread.currentThread());
+            new SWTGuitarRunner(replayer).run();
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
             System.err.println();

@@ -6,6 +6,9 @@
 
 build.properties
 
+*.log
+/GUITAR-Default.STA
+
 # Eclipse's .classpath contains developer-specific paths (e.g. to linked sources)
 /.classpath
 
