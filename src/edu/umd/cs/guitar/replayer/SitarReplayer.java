@@ -27,13 +27,13 @@ import org.xml.sax.SAXException;
 
 import edu.umd.cs.guitar.model.GIDGenerator;
 import edu.umd.cs.guitar.model.IO;
-import edu.umd.cs.guitar.model.SWTDefaultIDGenerator;
+import edu.umd.cs.guitar.model.SitarDefaultIDGenerator;
 import edu.umd.cs.guitar.model.data.TestCase;
 import edu.umd.cs.guitar.replayer.monitor.GTestMonitor;
 import edu.umd.cs.guitar.replayer.monitor.PauseMonitor;
-import edu.umd.cs.guitar.replayer.monitor.SWTStateMonitorFull;
-import edu.umd.cs.guitar.ripper.SWTGuitarExecutor;
-import edu.umd.cs.guitar.ripper.SWTGuitarRunner;
+import edu.umd.cs.guitar.replayer.monitor.SitarStateMonitorFull;
+import edu.umd.cs.guitar.ripper.SitarExecutor;
+import edu.umd.cs.guitar.ripper.SitarRunner;
 import edu.umd.cs.guitar.util.GUITARLog;
 
 /**
@@ -42,18 +42,18 @@ import edu.umd.cs.guitar.util.GUITARLog;
  * @author Gabe Gorelick
  *
  */
-public class SWTReplayer extends SWTGuitarExecutor {
+public class SitarReplayer extends SitarExecutor {
 
-	private final SWTReplayerConfiguration config;
-	private final SWTReplayerMonitor monitor;
+	private final SitarReplayerConfiguration config;
+	private final SitarReplayerMonitor monitor;
 	private final Replayer replayer;
 
 	/**
-	 * Constructs a new <code>SWTReplayer</code>. This constructor is equivalent
+	 * Constructs a new <code>SitarReplayer</code>. This constructor is equivalent
 	 * to
 	 * 
 	 * <pre>
-	 * SWTReplayer(config, Thread.currentThread())
+	 * SitarReplayer(config, Thread.currentThread())
 	 * </pre>
 	 * 
 	 * Consequently, this constructor must be called on the same thread that the
@@ -63,9 +63,9 @@ public class SWTReplayer extends SWTGuitarExecutor {
 	 * @param config
 	 *            configuration
 	 * 
-	 * @see SWTGuitarRunner
+	 * @see SitarRunner
 	 */
-	public SWTReplayer(SWTReplayerConfiguration config) {
+	public SitarReplayer(SitarReplayerConfiguration config) {
 		this(config, Thread.currentThread());
 	}
 	
@@ -80,12 +80,12 @@ public class SWTReplayer extends SWTGuitarExecutor {
 	 * @param guiThread
 	 *            thread the GUI runs on
 	 * 
-	 * @see SWTGuitarRunner
+	 * @see SitarRunner
 	 */
-	public SWTReplayer(SWTReplayerConfiguration config, Thread guiThread) {
+	public SitarReplayer(SitarReplayerConfiguration config, Thread guiThread) {
 		super(config, guiThread);
 		this.config = config;
-		this.monitor = new SWTReplayerMonitor(config, getApplication());
+		this.monitor = new SitarReplayerMonitor(config, getApplication());
 		replayer = initReplayer();
 	}
 
@@ -101,10 +101,10 @@ public class SWTReplayer extends SWTGuitarExecutor {
 		try {
 			replayer = new Replayer(tc, config.getGuiFile(), config.getEfgFile());
 			
-			SWTStateMonitorFull stateMonitor = new SWTStateMonitorFull(
+			SitarStateMonitorFull stateMonitor = new SitarStateMonitorFull(
 					config.getGuiStateFile(), config.getDelay());
 
-			GIDGenerator idGenerator = SWTDefaultIDGenerator.getInstance();
+			GIDGenerator idGenerator = SitarDefaultIDGenerator.getInstance();
 			stateMonitor.setIdGenerator(idGenerator);
 
 			replayer.addTestMonitor(stateMonitor);
@@ -171,13 +171,13 @@ public class SWTReplayer extends SWTGuitarExecutor {
 	}
 
 	/**
-	 * Get the <code>SWTReplayerMonitor</code> associated with this
-	 * <code>SWTReplayer</code>.
+	 * Get the <code>SitarReplayerMonitor</code> associated with this
+	 * <code>SitarReplayer</code>.
 	 * 
 	 * @return the monitor used to communicate with the GUI
 	 */
 	@Override
-	public SWTReplayerMonitor getMonitor() {
+	public SitarReplayerMonitor getMonitor() {
 		return monitor;
 	}
 

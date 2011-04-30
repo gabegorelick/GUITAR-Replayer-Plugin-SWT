@@ -16,9 +16,9 @@ import edu.umd.cs.guitar.util.GUITARLog;
 /** 
  * A {@code StateMonitorFull} without the dependency on Jemmy.
  */
-public class SWTStateMonitorFull extends StateMonitorFull {
+public class SitarStateMonitorFull extends StateMonitorFull {
 
-	public SWTStateMonitorFull(String dtateFile, int delay) {
+	public SitarStateMonitorFull(String dtateFile, int delay) {
 		super(dtateFile, delay);
 	}
 	

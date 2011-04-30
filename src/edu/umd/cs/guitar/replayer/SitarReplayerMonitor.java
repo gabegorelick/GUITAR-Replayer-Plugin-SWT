@@ -29,43 +29,43 @@ import org.eclipse.swt.widgets.Shell;
 
 import edu.umd.cs.guitar.event.GEvent;
 import edu.umd.cs.guitar.model.GWindow;
-import edu.umd.cs.guitar.model.SWTApplication;
-import edu.umd.cs.guitar.model.SWTConstants;
-import edu.umd.cs.guitar.model.SWTWindow;
+import edu.umd.cs.guitar.model.SitarApplication;
+import edu.umd.cs.guitar.model.SitarConstants;
+import edu.umd.cs.guitar.model.SitarWindow;
 import edu.umd.cs.guitar.model.data.AttributesType;
 import edu.umd.cs.guitar.model.data.ComponentType;
 import edu.umd.cs.guitar.model.data.PropertyType;
-import edu.umd.cs.guitar.ripper.SWTMonitor;
+import edu.umd.cs.guitar.ripper.SitarMonitor;
 import edu.umd.cs.guitar.util.GUITARLog;
 
 /**
- * Monitor for {@link SWTReplayer} to handle SWT specific features. Adapted from
+ * Monitor for {@link SitarReplayer} to handle SWT specific features. Adapted from
  * <code>JFCReplayerMonitor</code>.
  * 
  * @author Gabe Gorelick
  * 
- * @see SWTReplayer
+ * @see SitarReplayer
  */
-public class SWTReplayerMonitor extends GReplayerMonitor {
+public class SitarReplayerMonitor extends GReplayerMonitor {
 
-	private final SWTApplication application;
+	private final SitarApplication application;
 	
 	// monitor to delegate actions shared with ripper to
-	private final SWTMonitor monitor;
+	private final SitarMonitor monitor;
 
 	private SecurityManager oldSecurityManager;
 
 	/**
-	 * Construct a new {@code SWTReplayerMonitor}.
+	 * Construct a new {@code SitarReplayerMonitor}.
 	 * 
 	 * @param config
 	 *            replayer configuration
 	 * @param app
-	 *            the {@code SWTApplication} for the GUI under test
+	 *            the {@code SitarApplication} for the GUI under test
 	 */
-	public SWTReplayerMonitor(SWTReplayerConfiguration config, SWTApplication app) {
+	public SitarReplayerMonitor(SitarReplayerConfiguration config, SitarApplication app) {
 		this.application = app;
-		this.monitor = new SWTMonitor(config, app);
+		this.monitor = new SitarMonitor(config, app);
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 	 */
 	@Override
 	public void setUp() {
-		GUITARLog.log.info("Setting up SWTReplayer...");
+		GUITARLog.log.info("Setting up SitarReplayer...");
 		
 		// Add handler for all uncaught exceptions
 		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
@@ -118,7 +118,7 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 	 * 
 	 * This implementation removes the security manager used to trap calls to
 	 * {@link System#exit(int) System.exit} and then calls
-	 * {@link SWTMonitor#cleanUp()}.
+	 * {@link SitarMonitor#cleanUp()}.
 	 */
 	@Override
 	public void cleanUp() {
@@ -186,7 +186,7 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 			for (Shell s : shells.get()) {
 				Shell shell = getOwnedWindowByID(s, windowTitle);
 				if (shell != null) {
-					retGXWindow = new SWTWindow(shell);
+					retGXWindow = new SitarWindow(shell);
 					break;
 				}
 			}
@@ -209,7 +209,7 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 		AttributesType attributes = comp.getAttributes();
 		List<PropertyType> lProperties = attributes.getProperty();
 		for (PropertyType p : lProperties) {
-			if (SWTConstants.ID_PROPERTIES.contains(p.getName()))
+			if (SitarConstants.ID_PROPERTIES.contains(p.getName()))
 				retIDProperties.add(p);
 		}
 		return retIDProperties;
@@ -229,7 +229,7 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 			return null;
 		}
 
-		GWindow gWindow = new SWTWindow(parent);
+		GWindow gWindow = new SitarWindow(parent);
 
 		String title = gWindow.getTitle();
 		if (title == null) {
@@ -268,7 +268,7 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 	
 	/**
 	 * Connect to the application under test. This method simply calls
-	 * {@link SWTApplication#connect()}.
+	 * {@link SitarApplication#connect()}.
 	 */
 	@Override
 	public void connectToApplication() {
@@ -276,13 +276,13 @@ public class SWTReplayerMonitor extends GReplayerMonitor {
 	}
 
 	/**
-	 * Return the {@code SWTApplication} used by the monitor to communicate with
+	 * Return the {@code SitarApplication} used by the monitor to communicate with
 	 * the GUI.
 	 * 
-	 * @return the {@code SWTApplication} used to communicate with the GUI
+	 * @return the {@code SitarApplication} used to communicate with the GUI
 	 */
 	@Override
-	public SWTApplication getApplication() {
+	public SitarApplication getApplication() {
 		return application;
 	}
 

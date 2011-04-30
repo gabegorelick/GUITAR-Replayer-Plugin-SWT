@@ -21,18 +21,18 @@ package edu.umd.cs.guitar.replayer;
 
 import org.kohsuke.args4j.Option;
 
-import edu.umd.cs.guitar.ripper.SWTGuitarConfiguration;
+import edu.umd.cs.guitar.ripper.SitarConfiguration;
 
 /**
- * Configuration specific to {@link SWTReplayer}. The configuration options
+ * Configuration specific to {@link SitarReplayer}. The configuration options
  * held by this class can be set through its setter methods or by passing
  * and instance of this class to an Args4j {@code CmdLineParser}.
  * 
  * @author Gabe Gorelick
  * 
- * @see SWTReplayerMain
+ * @see SitarReplayerMain
  */
-public class SWTReplayerConfiguration extends SWTGuitarConfiguration {
+public class SitarReplayerConfiguration extends SitarConfiguration {
 
 	// GUITAR runtime parameters	
 	@Option(name = "-e", usage = "EFG file path", aliases = "--efg-file", required = true)

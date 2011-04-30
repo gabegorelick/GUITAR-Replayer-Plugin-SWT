@@ -25,17 +25,17 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
-import edu.umd.cs.guitar.ripper.SWTGuitarRunner;
+import edu.umd.cs.guitar.ripper.SitarRunner;
 import edu.umd.cs.guitar.ripper.URLArrayOptionHandler;
 
 /**
- * Entry class for SWTReplayer.
+ * Entry class for SitarReplayer.
  * 
  * @author Gabe Gorelick
  */
-public class SWTReplayerMain {
+public class SitarReplayerMain {
 
-	private SWTReplayerMain() {
+	private SitarReplayerMain() {
 		// this space intentionally left blank
 	}
 
@@ -51,7 +51,7 @@ public class SWTReplayerMain {
 		CmdLineParser.registerHandler(String[].class, StringArrayOptionHandler.class);
     	CmdLineParser.registerHandler(URL[].class, URLArrayOptionHandler.class);
     	
-        SWTReplayerConfiguration configuration = new SWTReplayerConfiguration();
+        SitarReplayerConfiguration configuration = new SitarReplayerConfiguration();
         CmdLineParser parser = new CmdLineParser(configuration);
         
         try {
@@ -61,8 +61,8 @@ public class SWTReplayerMain {
             	return;
             }
                
-            SWTReplayer replayer = new SWTReplayer(configuration, Thread.currentThread());
-            new SWTGuitarRunner(replayer).run();
+            SitarReplayer replayer = new SitarReplayer(configuration, Thread.currentThread());
+            new SitarRunner(replayer).run();
         } catch (CmdLineException e) {
             System.err.println(e.getMessage());
             System.err.println();
