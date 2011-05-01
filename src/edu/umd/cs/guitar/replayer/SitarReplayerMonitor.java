@@ -19,7 +19,6 @@
  */
 package edu.umd.cs.guitar.replayer;
 
-import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -53,8 +52,6 @@ public class SitarReplayerMonitor extends GReplayerMonitor {
 	// monitor to delegate actions shared with ripper to
 	private final SitarMonitor monitor;
 
-	private SecurityManager oldSecurityManager;
-
 	/**
 	 * Construct a new {@code SitarReplayerMonitor}.
 	 * 
@@ -69,60 +66,21 @@ public class SitarReplayerMonitor extends GReplayerMonitor {
 	}
 
 	/**
-	 * Class used to disable calls to System.exit().
-	 * 
-	 * @author Bao Nguyen
-	 * 
-	 */
-	private static class ExitTrappedException extends SecurityException {
-		private static final long serialVersionUID = 1L;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void setUp() {
 		GUITARLog.log.info("Setting up SitarReplayer...");
-		
-		// Add handler for all uncaught exceptions
-		Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-			public void uncaughtException(Thread t, Throwable e) {
-				GUITARLog.log.error("Uncaught exception", e);
-			}
-		});
-
-		
-		// Disable any calls to System.exit() (which would terminate the JVM) by the GUI
-		oldSecurityManager = System.getSecurityManager();
-		final SecurityManager securityManager = new SecurityManager() {
-			private static final String EXIT_VM_PERMISSON = "exitVM";
-			
-			@Override
-			public void checkPermission(Permission permission, Object context) {
-				if (EXIT_VM_PERMISSON.equals(permission.getName())) {
-					throw new ExitTrappedException();
-				}
-			}
-
-			@Override
-			public void checkPermission(Permission permission) {
-				checkPermission(permission, null);
-			}
-		};
-		System.setSecurityManager(securityManager);
+		monitor.disableExit();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * This implementation removes the security manager used to trap calls to
-	 * {@link System#exit(int) System.exit} and then calls
-	 * {@link SitarMonitor#cleanUp()}.
+	 * This implementation simply delegates to {@link SitarMonitor#cleanUp()}.
 	 */
 	@Override
 	public void cleanUp() {
-		System.setSecurityManager(oldSecurityManager);
 		monitor.cleanUp();
 	}
 
