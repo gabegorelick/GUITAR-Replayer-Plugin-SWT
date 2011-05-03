@@ -71,7 +71,6 @@ public class SitarReplayerMonitor extends GReplayerMonitor {
 	@Override
 	public void setUp() {
 		GUITARLog.log.info("Setting up SitarReplayer...");
-		monitor.disableExit();
 	}
 
 	/**
