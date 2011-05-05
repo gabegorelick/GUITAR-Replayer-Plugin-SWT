@@ -66,75 +66,191 @@ public class SitarReplayerConfiguration extends SitarConfiguration {
 	private boolean regUsed= false;
 	
 	// getters and setters
-	
-	public void setGuiFile(String guiFile) {
-		this.guiFile = guiFile;
-	}
 
+	/**
+	 * Get the path to the GUI structure file to use.
+	 * 
+	 * @return path to GUI structure file
+	 * @see #setGuiFile(String)
+	 */
 	public String getGuiFile() {
 		return guiFile;
 	}
 	
+	/**
+	 * Set the GUI structure file to use.
+	 * 
+	 * @param guiFile
+	 *            path to GUI structure file
+	 * @see #getGuiFile()
+	 */
+	public void setGuiFile(String guiFile) {
+		this.guiFile = guiFile;
+	}
+
+	/**
+	 * Get the path of the EFG file to use.
+	 * 
+	 * @return path to EFG file
+	 * @see #setEfgFile(String)
+	 */
 	public String getEfgFile() {
 		return efgFile;
 	}
 
+	/**
+	 * Set the path of the EFG file to use.
+	 * 
+	 * @param efgFile
+	 *            path to EFG file
+	 */
 	public void setEfgFile(String efgFile) {
 		this.efgFile = efgFile;
 	}
 
-	public String getTestcase() {
+	/**
+	 * Get the path of the test case to replay.
+	 * 
+	 * @return path to test case
+	 * @see #setTestcase(String)
+	 */
+	public String getTestcase() { // TODO rename getTestCase
 		return testcase;
 	}
 
-	public void setTestcase(String testcase) {
-		this.testcase = testcase;
+	/**
+	 * Set the path of the test case to replay.
+	 * 
+	 * @param testCase
+	 *            test case to replay
+	 * @see #getTestcase()
+	 */
+	public void setTestcase(String testCase) { // TODO rename getTestCase
+		this.testcase = testCase;
 	}
 
+	/**
+	 * Get the path to the GUI state file.
+	 * 
+	 * @return path to GUI state file
+	 * @see #setGuiStateFile(String)
+	 */
 	public String getGuiStateFile() {
 		return guiStateFile;
 	}
 
+	/**
+	 * Set the path of the GUI state file to use.
+	 * 
+	 * @param guiStateFile
+	 *            state file to use
+	 * @see #getGuiStateFile()
+	 */
 	public void setGuiStateFile(String guiStateFile) {
 		this.guiStateFile = guiStateFile;
 	}
 
+	/**
+	 * Get the delay used between test steps.
+	 * 
+	 * @return delay in milliseconds
+	 * @see #setDelay(int)
+	 */
 	public int getDelay() {
 		return delay;
 	}
 
+	/**
+	 * Set the delay used between test steps.
+	 * 
+	 * @param delay
+	 *            the delay in milliseconds
+	 * @see #getDelay()
+	 */
 	public void setDelay(int delay) {
 		this.delay = delay;
 	}
 
+	/**
+	 * Get the amount of time to wait for a test case to complete.
+	 * 
+	 * @return maximum time to wait (in milliseconds)
+	 * @see #setTestStepTimeout(int)
+	 */
 	public int getTestCaseTimeout() {
 		return testCaseTimeout;
 	}
 
+	/**
+	 * Set the amount of time to wait for a test case to complete.
+	 * 
+	 * @param testCaseTimeout
+	 *            maximum time to wait (in milliseconds)
+	 * @see #getTestCaseTimeout()
+	 */
 	public void setTestCaseTimeout(int testCaseTimeout) {
 		this.testCaseTimeout = testCaseTimeout;
 	}
 
+	/**
+	 * Get the amount of time to wait for a test step to complete.
+	 * 
+	 * @return amount of time (in milliseconds)
+	 * @see #setTestStepTimeout(int)
+	 */
 	public int getTestStepTimeout() {
 		return testStepTimeout;
 	}
 
+	/**
+	 * Set the amount of time to wait for a test step to complete.
+	 * 
+	 * @param testStepTimeout
+	 *            amount of time (in milliseconds)
+	 * @see #getTestStepTimeout()
+	 */
 	public void setTestStepTimeout(int testStepTimeout) {
 		this.testStepTimeout = testStepTimeout;
 	}
 
+	/**
+	 * Returns whether to utilize pausing or not.
+	 * 
+	 * @return {@code true} if using pausing
+	 * @see #setPause(boolean)
+	 */
 	public boolean getPause() {
 		return pause;
 	}
 
+	/**
+	 * Set whether to utilize pausing.
+	 * 
+	 * @param pause
+	 *            {@code true} to use pausing
+	 * @see #getPause()
+	 */
 	public void setPause(boolean pause) {
 		this.pause = pause;
 	}
 
+	/**
+	 * Returns whether regular expression matching should be used.
+	 * 
+	 * @return {@code true} if is used
+	 * @see #setRegUsed(boolean)
+	 */
 	public boolean getRegUsed() {
 		return regUsed;
 	}
 
+	/**
+	 * Set whether regular expressions matching should be used.
+	 * 
+	 * @param regUsed
+	 *            {@code true} if should use
+	 * @see #getRegUsed()
+	 */
 	public void setRegUsed(boolean regUsed) {
 		this.regUsed = regUsed;
 	}	

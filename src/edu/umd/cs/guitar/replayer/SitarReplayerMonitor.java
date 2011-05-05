@@ -172,14 +172,7 @@ public class SitarReplayerMonitor extends GReplayerMonitor {
 		return retIDProperties;
 	}
 
-	/**
-	 * 
-	 * Recursively search a window
-	 * 
-	 * @param parent
-	 * @param sWindowID
-	 * @return Window
-	 */
+	// recursively search a window for a given widget 
 	private Shell getOwnedWindowByID(final Shell parent, String sWindowID) {
 
 		if (parent == null) {

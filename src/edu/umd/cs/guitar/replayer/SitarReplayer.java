@@ -62,7 +62,7 @@ public class SitarReplayer extends SitarExecutor {
 	 * 
 	 * @param config
 	 *            configuration
-	 * 
+	 * @throws TestCaseNotFoundException if no test case was found
 	 * @see SitarRunner
 	 */
 	public SitarReplayer(SitarReplayerConfiguration config) {
@@ -79,7 +79,7 @@ public class SitarReplayer extends SitarExecutor {
 	 *            configuration
 	 * @param guiThread
 	 *            thread the GUI runs on
-	 * 
+	 * @throws TestCaseNotFoundException if no test case was found
 	 * @see SitarRunner
 	 */
 	public SitarReplayer(SitarReplayerConfiguration config, Thread guiThread) {

@@ -19,6 +19,12 @@
  */
 package edu.umd.cs.guitar.replayer;
 
+/**
+ * Thrown to indicate a test case was not found by the replayer.
+ * 
+ * @author Gabe Gorelick
+ * @see SitarReplayer#SitarReplayer(SitarReplayerConfiguration)
+ */
 public class TestCaseNotFoundException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;

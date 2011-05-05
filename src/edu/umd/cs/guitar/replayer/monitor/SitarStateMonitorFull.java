@@ -18,8 +18,13 @@ import edu.umd.cs.guitar.util.GUITARLog;
  */
 public class SitarStateMonitorFull extends StateMonitorFull {
 
-	public SitarStateMonitorFull(String dtateFile, int delay) {
-		super(dtateFile, delay);
+	/**
+	 * Constructor.
+	 * @param stateFile path to state file 
+	 * @param delay the delay to use
+	 */
+	public SitarStateMonitorFull(String stateFile, int delay) {
+		super(stateFile, delay);
 	}
 	
 	/**
